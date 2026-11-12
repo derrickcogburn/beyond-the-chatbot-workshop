@@ -1,0 +1,14 @@
+# R and Positron files
+.Rproj.user/
+.Rhistory
+.RData
+.Ruserdata
+
+# Rendered output (rebuild with Preview)
+*_files/
+*.html
+.quarto/
+
+# Never commit secrets
+.Renviron
+.env
