@@ -36,24 +36,34 @@ Upload `skills/sis-data-brief.zip` in the Skills section of Claude's settings, s
 
 ## Track B: Positron and Posit Assistant
 
-Open `workshop-starter.qmd` and the Posit Assistant panel.
+Open `workshop-starter.qmd`, then open Posit Assistant (Command Palette → **View: Show Posit Assistant**). Work through these six prompts in order. **Read every change before you accept it.**
 
-### Getting oriented
+### 1. Orient
 
-> Explain what each code chunk in workshop-starter.qmd does, in plain language, for someone who has never used R.
+> What do you know about this project? Who is the audience, and what standards should you follow?
 
-### Clean the scraped table
+*It should mention the SIS workshop and the research standards in `AGENTS.md`. If it doesn't, the folder isn't trusted.*
 
-> The `today` table from Wikipedia has numbers stored as text with commas. Write code that converts the telephone line counts to numbers, and add it as a new chunk in section 5.
+### 2. Explain
 
-### Make a new chart
+> Explain section 3 of workshop-starter.qmd line by line, for someone who has never used R.
 
-> Make a horizontal bar chart of the 15 countries with the most telephone lines in the `today` table, and add it to the document with a short explanation.
-
-### Connect then and now
-
-> Add a paragraph comparing the 1961 regional totals with today's top countries. Be explicit about the limits of comparing regions with countries, and landlines with overall connectivity.
-
-### When something breaks
+### 3. Fix (whenever you hit an error)
 
 > I got this error: [paste the error]. What does it mean, and how do I fix it?
+
+### 4. Extend
+
+> The today table stores numbers as text with commas. Add a chunk in section 5 that converts them to numbers.
+
+### 5. Plan
+
+> /plan Add a bar chart of the 15 countries with the most telephone lines, with a short explanation.
+
+*Starting with `/plan` asks the Assistant to propose a plan before it changes anything.*
+
+### 6. Interpret
+
+> Draft a paragraph comparing 1961 regions with today's leaders. Flag what landline data can't tell us.
+
+Then click **Preview** and look at what you built: prose, code, and output together. Which parts would you cite? What would you check first?
