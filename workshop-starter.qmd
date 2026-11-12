@@ -1,0 +1,159 @@
+---
+title: "Beyond the Chatbot: World Phones Then and Now"
+subtitle: "SIS Faculty AI Training Series, Session 2"
+author: "Your name here"
+format:
+  html:
+    toc: true
+    code-fold: false
+execute:
+  warning: false
+  message: false
+---
+
+## Welcome
+
+This is a **Quarto document**. It mixes three things:
+
+1. **Prose**, like this paragraph, written in plain text.
+2. **Code chunks**, the grey blocks below, which contain R code.
+3. **Output**, the tables and charts the code produces.
+
+This is called *literate programming*: the explanation and the analysis travel together, so anyone (a co-author, a reviewer, or future you) can read *and* rerun your work.
+
+**How to run it**
+
+- Run one chunk at a time with the **Run Cell** link above each grey block. Results appear below the chunk or in the Plots pane.
+- Or render the whole document with **Preview** (Cmd/Ctrl+Shift+K) to produce a finished web page.
+
+**Our question:** What does the global distribution of telephone access, then and now, tell us about the digital divide, and what *can't* these data tell us?
+
+---
+
+## 1. Load the packages
+
+Packages add extra tools to R. If you haven't installed them yet, run this once in the Console:
+`install.packages(c("tidyr", "ggplot2", "rvest"))`
+
+```{r}
+#| label: load-packages
+library(tidyr)    # reshaping data
+library(ggplot2)  # making charts
+library(rvest)    # reading data from web pages
+```
+
+---
+
+## 2. Look at the historical data
+
+`WorldPhones` comes built into R. It records the number of telephones, **in thousands**, in seven world regions for 1951 and 1956–1961.
+
+R stores the years as row *names* rather than as a column, so we first turn them into a proper `Year` column. Then we save a copy as a CSV file, the same file you can upload to the Claude app.
+
+```{r}
+#| label: load-worldphones
+phones <- data.frame(Year = as.integer(rownames(WorldPhones)), WorldPhones)
+
+write.csv(phones, "data/worldphones.csv", row.names = FALSE)
+
+phones
+```
+
+**Check your understanding:** Which region had the most telephones in 1961? Which grew fastest in percentage terms?
+
+---
+
+## 3. Reshape the data for charting
+
+Charting tools like data in "long" format: one row per region per year, rather than one column per region. `pivot_longer()` does that reshaping.
+
+```{r}
+#| label: reshape-long
+phones_long <- pivot_longer(
+  phones,
+  cols = -Year,              # every column except Year
+  names_to = "Region",
+  values_to = "Phones"
+)
+
+head(phones_long, 10)
+```
+
+---
+
+## 4. Chart growth, 1951–1961
+
+Because North America had far more phones than Africa, we use a **logarithmic scale**. On a log scale, equal distances mean equal *percentage* growth, so we can compare regions fairly.
+
+```{r}
+#| label: plot-growth
+#| fig-width: 8
+#| fig-height: 5
+ggplot(phones_long, aes(x = Year, y = Phones, color = Region)) +
+  geom_line(linewidth = 1) +
+  geom_point() +
+  scale_y_log10(labels = scales::comma) +
+  labs(
+    title = "Telephones by world region, 1951–1961",
+    subtitle = "Thousands of telephones, log scale",
+    x = NULL, y = "Telephones (thousands)",
+    caption = "Source: WorldPhones dataset, R datasets package"
+  ) +
+  theme_minimal()
+```
+
+**Interpret:** Which regions converged and which pulled away? What might explain the patterns, and what would you need to know before making that claim?
+
+---
+
+## 5. Collect current data from the web
+
+Now we "scrape" a table from Wikipedia. The code reads the web page, finds the first data table (Wikipedia calls these `wikitable`), and turns it into an R data frame.
+
+Web pages change, so if this chunk shows an error, don't worry; that's a real-world lesson in why we save copies of our data and document our sources.
+
+```{r}
+#| label: scrape-today
+#| error: true
+url <- "https://en.wikipedia.org/wiki/List_of_countries_by_number_of_telephone_lines_in_use"
+
+today <- read_html(url) |>
+  html_element("table.wikitable") |>
+  html_table()
+
+head(today, 10)
+```
+
+**Verify:** Open the page in your browser. Does the table match? What year do the figures refer to, and where did Wikipedia get them?
+
+---
+
+## 6. Your turn: work with Posit Assistant
+
+Open Posit Assistant (Command Palette → **View: Show Posit Assistant**). It has already read this project's `AGENTS.md` file, so it knows the audience and the research standards. Try these prompts, one at a time, and read what it changes before accepting it.
+
+**a. Clean the data**
+
+> The `today` table has numbers stored as text with commas. Add a new chunk below that converts the telephone line counts to numbers.
+
+**b. Chart today's leaders**
+
+> Make a horizontal bar chart of the 15 countries with the most telephone lines and add it to this document with a short explanation.
+
+**c. Connect then and now**
+
+> Add a paragraph comparing the 1961 regional totals with today's top countries. Be explicit about the limits of comparing regions with countries, and landlines with overall connectivity.
+
+Re-render with **Preview** and watch your additions appear alongside the code that produced them.
+
+---
+
+## 7. Reflect
+
+Write two or three sentences here:
+
+- How did doing this in Positron compare with doing it in the Claude app?
+- Which steps would you trust enough to cite? Which would you check again?
+- Where could this workflow help your own research or teaching?
+
+*Your reflection here.*
