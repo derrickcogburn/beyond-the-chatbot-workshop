@@ -1,0 +1,64 @@
+---
+title: "Beyond the Chatbot: Instructor Demo (R + Python)"
+format: html
+execute:
+  warning: false
+  message: false
+---
+
+Not for the participant repo. R and Python chunks in one document;
+Python chunks run through the reticulate package.
+
+```{r}
+#| label: setup-data
+library(reticulate)   # lets R-based Quarto docs run Python chunks
+phones <- data.frame(Year = as.integer(rownames(WorldPhones)), WorldPhones,
+                     row.names = NULL)
+dir.create("data", showWarnings = FALSE)
+write.csv(phones, "data/worldphones.csv", row.names = FALSE, quote = FALSE)
+```
+
+## Python: the same CSV and chart
+
+```{python}
+#| label: py-chart
+import pandas as pd
+import matplotlib.pyplot as plt
+
+phones = pd.read_csv("data/worldphones.csv")
+phones.set_index("Year").plot(logy=True, title="Telephones by region (thousands)")
+plt.show()
+```
+
+## Python: scrape with pandas (the easy way)
+
+```{python}
+#| label: py-scrape-pandas
+import requests
+from io import StringIO
+
+url = "https://en.wikipedia.org/wiki/List_of_countries_by_number_of_telephone_lines_in_use"
+headers = {"User-Agent": "SIS-AI-Workshop/1.0 (educational use)"}
+html = requests.get(url, headers=headers, timeout=30).text
+
+today = pd.read_html(StringIO(html), attrs={"class": "wikitable"})[0]
+today.head()
+```
+
+## Python: what pandas is doing under the hood (Beautiful Soup)
+
+```{python}
+#| label: py-scrape-bs4
+from bs4 import BeautifulSoup
+
+soup = BeautifulSoup(html, "html.parser")
+table = soup.find("table", class_="wikitable")
+
+rows = []
+for tr in table.find_all("tr")[1:]:
+    cells = [td.get_text(strip=True) for td in tr.find_all(["td", "th"])]
+    if cells:
+        rows.append(cells)
+
+rows[:5]
+```

@@ -52,9 +52,10 @@ R stores the years as row *names* rather than as a column, so we first turn them
 
 ```{r}
 #| label: load-worldphones
-phones <- data.frame(Year = as.integer(rownames(WorldPhones)), WorldPhones)
+phones <- data.frame(Year = as.integer(rownames(WorldPhones)), WorldPhones,
+                     row.names = NULL)
 
-write.csv(phones, "data/worldphones.csv", row.names = FALSE)
+write.csv(phones, "data/worldphones.csv", row.names = FALSE, quote = FALSE)
 
 phones
 ```
